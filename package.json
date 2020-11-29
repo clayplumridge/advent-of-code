@@ -1,7 +1,7 @@
 {
 	"name": "advent-of-code",
 	"version": "1.0.0",
-	"description": "Trevor Gau's solutions to Advent of Code 2020",
+	"description": "Clay Plumridge's solutions to Advent of Code 2020 - Trevor Gau's framework",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"

@@ -1,10 +1,10 @@
-import _ from "lodash";
+import _, { clone } from "lodash";
 import * as util from "../../../util/util";
 import * as test from "../../../util/test";
 import chalk from "chalk";
 import * as LOGUTIL from "../../../util/log";
 import { performance } from "perf_hooks";
-import { compute } from "../bigintcode";
+import { runProgram } from "../intcode";
 const { log, logSolution, trace } = LOGUTIL;
 
 const YEAR = 2019;
@@ -12,30 +12,34 @@ const DAY = 2;
 const DEBUG = true;
 LOGUTIL.setDebug(DEBUG);
 
-// solution path: /Users/trevorsg/t-hugs/advent-of-code/years/2019/02/index.ts
-// data path    : /Users/trevorsg/t-hugs/advent-of-code/years/2019/02/data.txt
+// solution path: D:\Development\advent-of-code\years\2019\02\index.ts
+// data path    : D:\Development\advent-of-code\years\2019\02\data.txt
 // problem url  : https://adventofcode.com/2019/day/2
 
 async function p2019day2_part1(input: string) {
-	const vn = input.split(",").map(BigInt);
-	vn[1] = 12n;
-	vn[2] = 2n;
-	const result = compute(vn);
+	const program = input.split(",").map(Number);
+	const result = runProgram(program);
 	return result[0];
 }
 
 async function p2019day2_part2(input: string) {
-	const vn = input.split(",").map(BigInt);
-	for (let i = 0; i < 100; ++i) {
-		for (let j = 0; j < 100; ++j) {
-			vn[1] = BigInt(i);
-			vn[2] = BigInt(j);
-			const result = compute(vn);
-			if (result[0] === 19690720n) {
-				return 100 * i + j;
+	const baseProgram = input.split(",").map(Number);
+	const target = 19690720;
+
+	for (let i = 0; i < 99; i++) {
+		for (let j = 0; j < 99; j++) {
+			const clonedArray = [...baseProgram];
+			clonedArray[1] = i;
+			clonedArray[2] = j;
+			runProgram(clonedArray);
+
+			if (clonedArray[0] == target) {
+				return [i, j];
 			}
 		}
 	}
+
+	throw new Error(`Target ${target} was not found`);
 }
 
 async function run() {
@@ -43,7 +47,7 @@ async function run() {
 	const part2tests: TestCase[] = [];
 
 	// Run tests
-	test.beginTests()
+	test.beginTests();
 	test.beginSection();
 	for (const testCase of part1tests) {
 		test.logTestResult(testCase, String(await p2019day2_part1(testCase.input)));
@@ -61,10 +65,10 @@ async function run() {
 	const part1Solution = String(await p2019day2_part1(input));
 	const part1After = performance.now();
 
-	const part2Before = performance.now()
+	const part2Before = performance.now();
 	const part2Solution = String(await p2019day2_part2(input));
 	const part2After = performance.now();
-	
+
 	logSolution(part1Solution, part2Solution);
 
 	log(chalk.gray("--- Performance ---"));
