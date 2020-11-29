@@ -16,11 +16,80 @@ LOGUTIL.setDebug(DEBUG);
 // problem url  : https://adventofcode.com/2019/day/4
 
 async function p2019day4_part1(input: string) {
-	return "Not implemented";
+	const [min, max] = input.split("-").map(Number);
+
+	let count = 0;
+
+	for (let i = min; i < max; i++) {
+		if (testNum(i)) {
+			count++;
+		}
+	}
+
+	return count;
+}
+
+function testNum(testNum: number): boolean {
+	let hasRepeat = false;
+
+	for (let pow = 6; pow > 1; pow--) {
+		const first = getDigit(testNum, pow);
+		const second = getDigit(testNum, pow - 1);
+
+		if (second < first) {
+			return false;
+		}
+
+		if (second == first) {
+			hasRepeat = true;
+		}
+	}
+
+	return hasRepeat;
+}
+
+function getDigit(num: number, pos: number) {
+	return Math.floor((num / Math.pow(10, pos - 1)) % 10);
 }
 
 async function p2019day4_part2(input: string) {
-	return "Not implemented";
+	const [min, max] = input.split("-").map(Number);
+
+	let count = 0;
+
+	for (let i = min; i < max; i++) {
+		if (testNum2(i)) {
+			count++;
+		}
+	}
+
+	console.log(testNum2(112233));
+	console.log(testNum2(123444));
+	console.log(testNum2(111122));
+
+	return count;
+}
+
+function testNum2(testNum: number): boolean {
+	let hasRepeat = false;
+
+	for (let pow = 6; pow > 1; pow--) {
+		const first = getDigit(testNum, pow);
+		const second = getDigit(testNum, pow - 1);
+
+		if (second < first) {
+			return false;
+		}
+
+		if (!hasRepeat && second == first) {
+			const prev = getDigit(testNum, pow + 1);
+			const next = getDigit(testNum, pow - 2);
+
+			hasRepeat = prev != first && next != first;
+		}
+	}
+
+	return hasRepeat;
 }
 
 async function run() {
@@ -28,7 +97,7 @@ async function run() {
 	const part2tests: TestCase[] = [];
 
 	// Run tests
-	test.beginTests()
+	test.beginTests();
 	test.beginSection();
 	for (const testCase of part1tests) {
 		test.logTestResult(testCase, String(await p2019day4_part1(testCase.input)));
@@ -46,10 +115,10 @@ async function run() {
 	const part1Solution = String(await p2019day4_part1(input));
 	const part1After = performance.now();
 
-	const part2Before = performance.now()
+	const part2Before = performance.now();
 	const part2Solution = String(await p2019day4_part2(input));
 	const part2After = performance.now();
-	
+
 	logSolution(part1Solution, part2Solution);
 
 	log(chalk.gray("--- Performance ---"));
