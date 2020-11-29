@@ -149,3 +149,7 @@ export function powerSet<T>(inputArr: T[], settings: { proper?: boolean; nonEmpt
 	}
 	return result;
 }
+
+export function intersect<T>(first: Set<T>, second: Set<T>): Set<T> {
+	return new Set([...first].filter(x => second.has(x)));
+}
