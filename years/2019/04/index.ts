@@ -63,10 +63,6 @@ async function p2019day4_part2(input: string) {
 		}
 	}
 
-	console.log(testNum2(112233));
-	console.log(testNum2(123444));
-	console.log(testNum2(111122));
-
 	return count;
 }
 
