@@ -16,11 +16,55 @@ LOGUTIL.setDebug(DEBUG);
 // problem url  : https://adventofcode.com/2019/day/8
 
 async function p2019day8_part1(input: string) {
-	return "Not implemented";
+	const chunks = chunk(input, 150);
+	const leastZeros = _.minBy(chunks, x => countChar(x, "0"))!;
+	return countChar(leastZeros, "1") * countChar(leastZeros, "2");
+}
+
+function chunk(array: string, chunkSize: number): string[] {
+	const result: string[] = [];
+
+	for (let i = 0; i < array.length; i += chunkSize) {
+		result[Math.ceil(i / chunkSize)] = array.slice(i, i + chunkSize);
+	}
+
+	return result;
+}
+
+function countChar(text: string, character: string) {
+	let count = 0;
+	for (let pos = 0; pos < text.length; pos++) {
+		if (text.charAt(pos) == character) {
+			count += 1;
+		}
+	}
+
+	return count;
 }
 
 async function p2019day8_part2(input: string) {
-	return "Not implemented";
+	const chunks = chunk(input, 150);
+	let currentImage = chunks[chunks.length - 1];
+	for (let layer = chunks.length - 2; layer >= 0; layer--) {
+		currentImage = mergeChunks(currentImage, chunks[layer]);
+	}
+
+	const resultStrings = chunk(currentImage, 25);
+	return "\n" + resultStrings.join("\n");
+}
+
+function mergeChunks(bottomChunk: string, topChunk: string): string {
+	let result = "";
+
+	for (let i = 0; i < bottomChunk.length; i++) {
+		if (topChunk.charAt(i) == "2") {
+			result += bottomChunk.charAt(i);
+		} else {
+			result += topChunk.charAt(i);
+		}
+	}
+
+	return result;
 }
 
 async function run() {
@@ -28,7 +72,7 @@ async function run() {
 	const part2tests: TestCase[] = [];
 
 	// Run tests
-	test.beginTests()
+	test.beginTests();
 	test.beginSection();
 	for (const testCase of part1tests) {
 		test.logTestResult(testCase, String(await p2019day8_part1(testCase.input)));
@@ -46,11 +90,22 @@ async function run() {
 	const part1Solution = String(await p2019day8_part1(input));
 	const part1After = performance.now();
 
-	const part2Before = performance.now()
+	const part2Before = performance.now();
 	const part2Solution = String(await p2019day8_part2(input));
 	const part2After = performance.now();
-	
-	logSolution(part1Solution, part2Solution);
+
+	logSolution(part1Solution, "");
+	let printSolution = "";
+	for (let i = 0; i < part2Solution.length; i++) {
+		if (part2Solution.charAt(i) == "0") {
+			printSolution += chalk.bgBlack("0");
+		} else if (part2Solution.charAt(i) == "1") {
+			printSolution += chalk.bgWhite("1");
+		} else if (part2Solution.charAt(i) == "\n") {
+			printSolution += "\n";
+		}
+	}
+	console.log(printSolution);
 
 	log(chalk.gray("--- Performance ---"));
 	log(chalk.gray(`Part 1: ${util.msToString(part1After - part1Before)}`));
