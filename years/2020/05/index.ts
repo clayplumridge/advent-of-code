@@ -21,15 +21,17 @@ interface Seat {
 }
 
 async function p2020day5_part1(input: string) {
-	const seats = input.split("\n").map(
+	return Math.max(...createSeats(input).map(seatId));
+}
+
+function createSeats(input: string) {
+	return input.split("\n").map(
 		x =>
 			({
 				row: parseInt(replaceAll(replaceAll(x.slice(0, 7), "F", "0"), "B", "1"), 2),
 				col: parseInt(replaceAll(replaceAll(x.slice(7), "L", "0"), "R", "1"), 2),
 			} as Seat)
 	);
-
-	return Math.max(...seats.map(seatId));
 }
 
 function replaceAll(str: string, search: string, replace: string) {
@@ -41,25 +43,10 @@ function seatId(seat: Seat) {
 }
 
 async function p2020day5_part2(input: string) {
-	const seats = input.split("\n").map(
-		x =>
-			({
-				row: parseInt(replaceAll(replaceAll(x.slice(0, 7), "F", "0"), "B", "1"), 2),
-				col: parseInt(replaceAll(replaceAll(x.slice(7), "L", "0"), "R", "1"), 2),
-			} as Seat)
-	);
-
-	const sorted = seats.map(seatId).sort((a, b) => a - b);
-
-	let prevId = sorted[0];
-	for (let i = 1; i < sorted.length; i++) {
-		if (sorted[i] !== prevId + 1) {
-			return prevId + 1;
-		}
-		prevId += 1;
-	}
-
-	return "Not found";
+	const sorted = createSeats(input)
+		.map(seatId)
+		.sort((a, b) => a - b);
+	return sorted.find((val, idx) => val + 1 !== sorted[idx])! + 1;
 }
 
 async function run() {
